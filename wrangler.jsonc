@@ -1,0 +1,35 @@
+{
+	"name": "course-automation-worker",
+	"main": "src/index.ts",
+	"compatibility_date": "2025-06-07",
+	"migrations": [
+		{
+			"tag": "v1",
+			"new_classes": ["Cart"]
+		},
+		{
+			"tag": "v2",
+			"new_classes": ["ExpiryReminder7Day", "ExpiryReminder1Day"]
+		}
+	],
+	"durable_objects": {
+		"bindings": [
+			{
+				"class_name": "Cart",
+				"name": "CART"
+			},
+			{
+				"class_name": "ExpiryReminder7Day",
+				"name": "EXPIRY_7DAY"
+			},
+			{
+				"class_name": "ExpiryReminder1Day",
+				"name": "EXPIRY_1DAY"
+			}
+		]
+	},
+
+	"observability": {
+		"enabled": true
+	}
+}
