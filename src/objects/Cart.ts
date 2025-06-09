@@ -110,7 +110,7 @@ export class Cart extends DurableObject {
 			Object.assign(item, updates);
 			console.log('Updated cart Item:', item);
 			await this.ctx.storage.put('cartItems', cartItems);
-            
+
 			await this._resetCartReminder();
 
 			return `Item ${courseId} updated successfully`;
@@ -126,7 +126,8 @@ export class Cart extends DurableObject {
 
 	async clearCart(): Promise<string> {
 		await this.ctx.storage.put('cartItems', []);
-
+		const cartItems: CartItem[] = (await this.ctx.storage.get<CartItem[]>('cartItems')) || [];
+		console.log('Cart items after clearing:', cartItems.length);
 		await this._resetCartReminder();
 
 		return 'Cart cleared successfully';
