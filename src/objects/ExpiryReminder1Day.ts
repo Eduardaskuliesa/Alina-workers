@@ -3,7 +3,7 @@ import { DurableObject } from 'cloudflare:workers';
 export interface ExpiryData {
 	courseId: string;
 	userId: string;
-	expiryDate: string;
+	expiresAt: string;
 }
 
 export class ExpiryReminder1Day extends DurableObject {
@@ -14,10 +14,11 @@ export class ExpiryReminder1Day extends DurableObject {
 	async scheduleReminder(expiryData: ExpiryData): Promise<string> {
 		await this.ctx.storage.put('expiryData', expiryData);
 
-		const reminderTime = new Date(expiryData.expiryDate).getTime() - (1 * 24 * 60 * 60 * 1000);
+		const reminderTime = new Date(expiryData.expiresAt).getTime() - (1 * 24 * 60 * 60 * 1000);
 
 		if (reminderTime > Date.now()) {
 			await this.ctx.storage.setAlarm(reminderTime);
+			console.log(`🔔 1-day reminder scheduled`);
 			return `1-day reminder scheduled for course ${expiryData.courseId} for user ${expiryData.userId}`;
 		}
 		return 'Too late to schedule 1-day reminder';

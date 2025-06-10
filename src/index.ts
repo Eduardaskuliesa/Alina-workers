@@ -106,18 +106,31 @@ export default {
 			}
 
 			if (url.pathname === '/schedule-expiry-7days' && request.method === 'POST') {
-				const expiryData = (await request.json()) as { userId: string; courseId: string };
-				const reminderId = env.EXPIRY_7DAY.idFromName(`${expiryData.userId}-${expiryData.courseId}`);
-				const reminder = env.EXPIRY_7DAY.get(reminderId);
+				try {
+					const requestBody = await request.json();
 
-				const result = await reminder.scheduleReminder(expiryData as ExpiryData);
-				return new Response(JSON.stringify({ success: true, message: result }), {
-					headers: corsHeaders,
-				});
+					const expiryData = requestBody as { userId: string; courseId: string; expiresAt: string };
+					const reminderId = env.EXPIRY_7DAY.idFromName(`${expiryData.userId}-${expiryData.courseId}`);
+					const reminder = env.EXPIRY_7DAY.get(reminderId);
+
+					const result = await reminder.scheduleReminder(expiryData as ExpiryData);
+
+					return new Response(JSON.stringify({ success: true, message: result }), {
+						headers: corsHeaders,
+					});
+				} catch (error) {
+					console.error('Worker error:', error);
+					return new Response(JSON.stringify({ error: error }), {
+						status: 500,
+						headers: corsHeaders,
+					});
+				}
 			}
 
 			if (url.pathname === '/schedule-expiry-1day' && request.method === 'POST') {
-				const expiryData = (await request.json()) as { userId: string; courseId: string };
+				const requestBody = await request.json();
+
+				const expiryData = requestBody as { userId: string; courseId: string; expiresAt: string };
 				const reminderId = env.EXPIRY_1DAY.idFromName(`${expiryData.userId}-${expiryData.courseId}`);
 				const reminder = env.EXPIRY_1DAY.get(reminderId);
 

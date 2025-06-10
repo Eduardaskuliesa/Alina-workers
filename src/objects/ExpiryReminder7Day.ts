@@ -4,7 +4,7 @@ import { DurableObject } from "cloudflare:workers";
 export interface ExpiryData {
 	courseId: string;
 	userId: string;
-	expiryDate: string;
+	expiresAt: string;
 }
 
 export class ExpiryReminder7Day extends DurableObject {
@@ -15,10 +15,11 @@ export class ExpiryReminder7Day extends DurableObject {
 	async scheduleReminder(expiryData: ExpiryData): Promise<string> {
 		await this.ctx.storage.put('expiryData', expiryData);
 
-		const reminderTime = new Date(expiryData.expiryDate).getTime() - (7 * 24 * 60 * 60 * 1000);
+		const reminderTime = new Date(expiryData.expiresAt).getTime() - (7 * 24 * 60 * 60 * 1000);
 
 		if (reminderTime > Date.now()) {
 			await this.ctx.storage.setAlarm(reminderTime);
+			console.log(`🔔 7-day reminder scheduled`);
 			return `7-day reminder scheduled for course ${expiryData.courseId} for user ${expiryData.userId}`;
 		}
 		return 'Too late to schedule 7-day reminder';
