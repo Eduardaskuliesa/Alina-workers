@@ -15,6 +15,8 @@ export interface CartItem {
 	isFromPrice?: boolean;
 }
 
+const FOUR_HOURS_IN_MS = 4 * 60 * 60 * 1000;
+
 export class Cart extends DurableObject {
 	constructor(ctx: DurableObjectState, env: Env) {
 		super(ctx, env);
@@ -23,7 +25,7 @@ export class Cart extends DurableObject {
 		const cartItems: CartItem[] = (await this.ctx.storage.get<CartItem[]>('cartItems')) || [];
 
 		if (cartItems.length > 0) {
-			const reminderTime = Date.now() + 4 * 60 * 60 * 1000;
+			const reminderTime = Date.now() + FOUR_HOURS_IN_MS;
 			await this.ctx.storage.setAlarm(reminderTime);
 			await this.ctx.storage.put('reminderScheduled', true);
 			console.log('🔔 Cart reminder scheduled');

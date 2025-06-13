@@ -6,6 +6,8 @@ export interface ExpiryData {
 	expiresAt: string;
 }
 
+const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
+
 export class ExpiryReminder1Day extends DurableObject {
 	constructor(ctx: DurableObjectState, env: Env) {
 		super(ctx, env);
@@ -14,7 +16,7 @@ export class ExpiryReminder1Day extends DurableObject {
 	async scheduleReminder(expiryData: ExpiryData): Promise<string> {
 		await this.ctx.storage.put('expiryData', expiryData);
 
-		const reminderTime = new Date(expiryData.expiresAt).getTime() - (1 * 24 * 60 * 60 * 1000);
+		const reminderTime = new Date(expiryData.expiresAt).getTime() - ONE_DAY_IN_MS;
 
 		if (reminderTime > Date.now()) {
 			await this.ctx.storage.setAlarm(reminderTime);
