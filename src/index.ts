@@ -110,7 +110,6 @@ export default {
 				});
 			}
 
-			// WhishList endpoints
 			if (url.pathname === '/whishlist/add' && request.method === 'POST') {
 				const item: WhishListItem = await request.json();
 				const result = await whishList.addToWhishList(item);

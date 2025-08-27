@@ -22,13 +22,15 @@ export class WhishList extends DurableObject {
 	async getWhishLists(): Promise<WhishListItem[]> {
 		const whishListItems: WhishListItem[] = (await this.ctx.storage.get<WhishListItem[]>('whishListItems')) || [];
 		console.log('Whishlist items retrieved:', whishListItems.length);
+
+		console.log('Whishlist items:', whishListItems);
 		return whishListItems;
 	}
 
 	async addToWhishList(item: WhishListItem): Promise<string> {
 		const whishListItems: WhishListItem[] = (await this.ctx.storage.get<WhishListItem[]>('whishListItems')) || [];
 		console.log('Whishlist items before adding:', whishListItems.length);
-		
+
 		const exist = whishListItems.find((whishListItem) => whishListItem.courseId === item.courseId);
 		if (exist) {
 			return `Item already exists in the whishlist`;

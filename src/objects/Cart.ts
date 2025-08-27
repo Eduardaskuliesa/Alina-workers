@@ -123,6 +123,7 @@ export class Cart extends DurableObject {
 
 	async getCart(): Promise<CartItem[]> {
 		const cartItems: CartItem[] = (await this.ctx.storage.get<CartItem[]>('cartItems')) || [];
+		console.log('Cart items retrieved:', cartItems.length);
 		return cartItems;
 	}
 
