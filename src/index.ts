@@ -1,8 +1,10 @@
 import { Cart, CartItem } from './objects/Cart';
+import { WhishList, WhishListItem } from './objects/WhishList';
 
 import { ExpiryReminder1Day } from './objects/ExpiryReminder1Day';
 import { ExpiryData, ExpiryReminder7Day } from './objects/ExpiryReminder7Day';
 export { Cart };
+export { WhishList };
 
 export { ExpiryReminder7Day };
 export { ExpiryReminder1Day };
@@ -53,6 +55,9 @@ export default {
 		const cartId = env.CART.idFromName(`user-${userId}`);
 		const cart = env.CART.get(cartId);
 
+		const whishListId = env.WHISHLIST.idFromName(`user-${userId}`);
+		const whishList = env.WHISHLIST.get(whishListId);
+
 		try {
 			if (url.pathname === '/cart/add' && request.method === 'POST') {
 				const item: CartItem = await request.json();
@@ -101,6 +106,42 @@ export default {
 				const result = await cart.resetCartReminder();
 
 				return new Response(JSON.stringify({ success: true, message: result }), {
+					headers: corsHeaders,
+				});
+			}
+
+			// WhishList endpoints
+			if (url.pathname === '/whishlist/add' && request.method === 'POST') {
+				const item: WhishListItem = await request.json();
+				const result = await whishList.addToWhishList(item);
+
+				return new Response(JSON.stringify({ success: true, message: result }), {
+					headers: corsHeaders,
+				});
+			}
+
+			if (url.pathname === '/whishlist/remove' && request.method === 'DELETE') {
+				const { courseId } = (await request.json()) as { courseId: string };
+				const result = await whishList.removeFromWhishList(courseId);
+
+				return new Response(JSON.stringify({ success: true, message: result }), {
+					headers: corsHeaders,
+				});
+			}
+
+			if (url.pathname === '/whishlist/update' && request.method === 'PUT') {
+				const { courseId, updates } = (await request.json()) as { courseId: string; updates: Partial<WhishListItem> };
+				const result = await whishList.updateWhishList(courseId, updates);
+
+				return new Response(JSON.stringify({ success: true, message: result }), {
+					headers: corsHeaders,
+				});
+			}
+
+			if (url.pathname === '/whishlist' && request.method === 'GET') {
+				const whishListItems = await whishList.getWhishLists();
+
+				return new Response(JSON.stringify({ success: true, whishlist: whishListItems }), {
 					headers: corsHeaders,
 				});
 			}

@@ -5,6 +5,7 @@ declare namespace Cloudflare {
 	interface Env {
 		API_KEY: string;
 		CART: DurableObjectNamespace<import("./src/index").Cart>;
+        WHISHLIST: DurableObjectNamespace<import("./src/index").WhishList>;
 		EXPIRY_7DAY: DurableObjectNamespace<import("./src/index").ExpiryReminder7Day>;
 		EXPIRY_1DAY: DurableObjectNamespace<import("./src/index").ExpiryReminder1Day>;
 	}

@@ -10,6 +10,10 @@
 		{
 			"tag": "v2",
 			"new_classes": ["ExpiryReminder7Day", "ExpiryReminder1Day"]
+		},
+		{
+			"tag": "v3",
+			"new_classes": ["WhishList"]
 		}
 	],
 	"durable_objects": {
@@ -25,6 +29,10 @@
 			{
 				"class_name": "ExpiryReminder1Day",
 				"name": "EXPIRY_1DAY"
+			},
+			{
+				"class_name": "WhishList",
+				"name": "WHISHLIST"
 			}
 		]
 	},
