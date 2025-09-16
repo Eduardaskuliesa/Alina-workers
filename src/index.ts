@@ -36,7 +36,6 @@ export default {
 		if (!apiKey || apiKey !== env.API_KEY) {
 			console.log(request.headers);
 			console.log('Unauthorized access attempt with API key:', apiKey);
-			console.log('Expected API key:', env.API_KEY);
 			return new Response(JSON.stringify({ error: 'Unauthorized' }), {
 				status: 401,
 				headers: corsHeaders,
