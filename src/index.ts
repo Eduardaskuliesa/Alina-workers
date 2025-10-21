@@ -13,15 +13,19 @@ export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
 		const url = new URL(request.url);
 
+		const allowedOrigins = ['http://localhost:3000', 'https://alina-savcenko.vercel.app'];
+		const origin = request.headers.get('Origin') || '';
+		const corsOrigin = allowedOrigins.includes(origin) ? origin : allowedOrigins[0];
+
 		const corsHeaders = {
-			'Access-Control-Allow-Origin': 'http://localhost:3000',
+			'Access-Control-Allow-Origin': corsOrigin,
 			'Content-Type': 'application/json',
 		};
 
 		if (request.method === 'OPTIONS') {
 			return new Response(null, {
 				headers: {
-					'Access-Control-Allow-Origin': 'http://localhost:3000',
+					'Access-Control-Allow-Origin': corsOrigin,
 					'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS, PUT',
 					'Access-Control-Allow-Headers': 'Content-Type, x-api-key',
 				},

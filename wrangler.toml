@@ -1,0 +1,34 @@
+name = "alina-cart-worker"
+main = "src/index.ts"
+compatibility_date = "2025-06-07"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Cart"]
+
+[[migrations]]
+tag = "v2"
+new_sqlite_classes = ["ExpiryReminder7Day", "ExpiryReminder1Day"]
+
+[[migrations]]
+tag = "v3"
+new_sqlite_classes = ["WhishList"]
+
+[[durable_objects.bindings]]
+name = "CART"
+class_name = "Cart"
+
+[[durable_objects.bindings]]
+name = "EXPIRY_7DAY"
+class_name = "ExpiryReminder7Day"
+
+[[durable_objects.bindings]]
+name = "EXPIRY_1DAY"
+class_name = "ExpiryReminder1Day"
+
+[[durable_objects.bindings]]
+name = "WHISHLIST"
+class_name = "WhishList"
+
+[observability]
+enabled = true
