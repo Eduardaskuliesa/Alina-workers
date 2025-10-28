@@ -36,12 +36,47 @@ export default {
 			return new Response('Cart Worker is healthy!');
 		}
 
-		const apiKey = request.headers.get('x-api-key');
-		if (!apiKey || apiKey !== env.API_KEY) {
-			console.log(request.headers);
-			console.log('Unauthorized access attempt with API key:', apiKey);
-			return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-				status: 401,
+		// const apiKey = request.headers.get('x-api-key');
+		// if (!apiKey || apiKey !== env.API_KEY) {
+		// 	console.log(request.headers);
+		// 	console.log('Unauthorized access attempt with API key:', apiKey);
+		// 	return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+		// 		status: 401,
+		// 		headers: corsHeaders,
+		// 	});
+		// }
+
+		if (url.pathname === '/schedule-expiry-7days' && request.method === 'POST') {
+			try {
+				const requestBody = await request.json();
+
+				const expiryData = requestBody as { userId: string; courseId: string; expiresAt: string };
+				const reminderId = env.EXPIRY_7DAY.idFromName(`${expiryData.userId}-${expiryData.courseId}`);
+				const reminder = env.EXPIRY_7DAY.get(reminderId);
+
+				const result = await reminder.scheduleReminder(expiryData as ExpiryData);
+
+				return new Response(JSON.stringify({ success: true, message: result }), {
+					headers: corsHeaders,
+				});
+			} catch (error) {
+				console.error('Worker error:', error);
+				return new Response(JSON.stringify({ error: error }), {
+					status: 500,
+					headers: corsHeaders,
+				});
+			}
+		}
+
+		if (url.pathname === '/schedule-expiry-1day' && request.method === 'POST') {
+			const requestBody = await request.json();
+
+			const expiryData = requestBody as { userId: string; courseId: string; expiresAt: string };
+			const reminderId = env.EXPIRY_1DAY.idFromName(`${expiryData.userId}-${expiryData.courseId}`);
+			const reminder = env.EXPIRY_1DAY.get(reminderId);
+
+			const result = await reminder.scheduleReminder(expiryData as ExpiryData);
+			return new Response(JSON.stringify({ success: true, message: result }), {
 				headers: corsHeaders,
 			});
 		}
@@ -144,41 +179,6 @@ export default {
 				const whishListItems = await whishList.getWhishLists();
 
 				return new Response(JSON.stringify({ success: true, whishlist: whishListItems }), {
-					headers: corsHeaders,
-				});
-			}
-
-			if (url.pathname === '/schedule-expiry-7days' && request.method === 'POST') {
-				try {
-					const requestBody = await request.json();
-
-					const expiryData = requestBody as { userId: string; courseId: string; expiresAt: string };
-					const reminderId = env.EXPIRY_7DAY.idFromName(`${expiryData.userId}-${expiryData.courseId}`);
-					const reminder = env.EXPIRY_7DAY.get(reminderId);
-
-					const result = await reminder.scheduleReminder(expiryData as ExpiryData);
-
-					return new Response(JSON.stringify({ success: true, message: result }), {
-						headers: corsHeaders,
-					});
-				} catch (error) {
-					console.error('Worker error:', error);
-					return new Response(JSON.stringify({ error: error }), {
-						status: 500,
-						headers: corsHeaders,
-					});
-				}
-			}
-
-			if (url.pathname === '/schedule-expiry-1day' && request.method === 'POST') {
-				const requestBody = await request.json();
-
-				const expiryData = requestBody as { userId: string; courseId: string; expiresAt: string };
-				const reminderId = env.EXPIRY_1DAY.idFromName(`${expiryData.userId}-${expiryData.courseId}`);
-				const reminder = env.EXPIRY_1DAY.get(reminderId);
-
-				const result = await reminder.scheduleReminder(expiryData as ExpiryData);
-				return new Response(JSON.stringify({ success: true, message: result }), {
 					headers: corsHeaders,
 				});
 			}
