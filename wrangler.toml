@@ -32,7 +32,7 @@ class_name = "WhishList"
 
 [[kv_namespaces]]
 binding = "CART_REMINDER_COOLDOWN"
-id = "f6fc1466382349b7b1c2544592ede24f"
+id = "a33c7be598e447e681c16ca2557d812b"
 
 [observability]
 enabled = true
