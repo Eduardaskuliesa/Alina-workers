@@ -30,5 +30,9 @@ class_name = "ExpiryReminder1Day"
 name = "WHISHLIST"
 class_name = "WhishList"
 
+[[kv_namespaces]]
+binding = "CART_REMINDER_COOLDOWN"
+id = "f6fc1466382349b7b1c2544592ede24f"
+
 [observability]
 enabled = true

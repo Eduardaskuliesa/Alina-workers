@@ -5,7 +5,9 @@ declare namespace Cloudflare {
 	interface Env {
 		API_KEY: string;
 		NEXTJS_APP_API_SECRET: string;
-		WORKER_ULR: string;
+		NEXTJS_APP_URL: string;
+		WORKER_URL: string;
+		CART_REMINDER_COODLOWN: KVNamespace;
 		CART: DurableObjectNamespace<import('./src/index').Cart>;
 		WHISHLIST: DurableObjectNamespace<import('./src/index').WhishList>;
 		EXPIRY_7DAY: DurableObjectNamespace<import('./src/index').ExpiryReminder7Day>;

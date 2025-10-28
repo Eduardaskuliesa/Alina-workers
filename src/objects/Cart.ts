@@ -15,7 +15,8 @@ export interface CartItem {
 	isFromPrice?: boolean;
 }
 
-const FOUR_HOURS_IN_MS = 4 * 60 * 60 * 1000;
+const FOUR_HOURS_IN_MS = 2 * 1000;
+const CART_REMINDER_COLDOWN_TIME_IN_S = 60;
 
 export class Cart extends DurableObject {
 	constructor(ctx: DurableObjectState, env: Env) {
@@ -38,11 +39,17 @@ export class Cart extends DurableObject {
 
 	private async _notifyNextJsApp(cartItems: CartItem[]): Promise<void> {
 		try {
-			const env = this.env as { NEXTJS_APP_URL: string; NEXTJS_APP_API_SECRET: string };
+			const env = this.env as {
+				NEXTJS_APP_URL: string;
+				NEXTJS_APP_API_SECRET: string;
+				WORKER_URL: string;
+				CART_REMINDER_COOLDOWN: KVNamespace;
+			};
 			const userId = cartItems.length > 0 ? cartItems[0].userId : null;
 			const response = await fetch(`${env.NEXTJS_APP_URL}/api/send-cart-reminder`, {
 				method: 'POST',
 				headers: {
+					'x-worker-origin': `${env.WORKER_URL}`,
 					'Content-Type': 'application/json',
 					Authorization: `Bearer ${env.NEXTJS_APP_API_SECRET}`,
 				},
@@ -54,6 +61,8 @@ export class Cart extends DurableObject {
 			});
 
 			if (response.ok) {
+				const key = `cart-reminder-is-on-cooldown-${userId}`;
+				await env.CART_REMINDER_COOLDOWN.put(userId!, key, { expirationTtl: CART_REMINDER_COLDOWN_TIME_IN_S });
 				console.log('✅ Cart reminder sent to Next.js successfully');
 			} else {
 				console.error('❌ Failed to notify Next.js:', response.status);
@@ -137,12 +146,18 @@ export class Cart extends DurableObject {
 	}
 
 	async alarm(): Promise<void> {
-		console.log('🔔 Cart reminder alarm fired!');
+		console.log('🔔 Cart reminder alarm triggered!');
+		const env = this.env as { CART_REMINDER_COOLDOWN: KVNamespace };
+
 		const cartItems: CartItem[] = (await this.ctx.storage.get<CartItem[]>('cartItems')) || [];
 		const reminderScheduled = (await this.ctx.storage.get('reminderScheduled')) || false;
+		const userId = cartItems.length > 0 ? cartItems[0].userId : null;
 
-		if (cartItems.length > 0 && reminderScheduled) {
-			console.log(`User has ${cartItems.length} items in cart for 4hours.`);
+		const cooldown = await env.CART_REMINDER_COOLDOWN.get(userId!);
+		console.log(cooldown);
+
+		if (cartItems.length > 0 && reminderScheduled && cooldown === null) {
+			console.log('🔔 Cart reminder alarm proccesing!');
 			await this._notifyNextJsApp(cartItems);
 		}
 		await this.ctx.storage.put('reminderScheduled', false);
