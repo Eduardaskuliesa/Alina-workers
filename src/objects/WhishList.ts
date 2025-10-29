@@ -23,7 +23,6 @@ export class WhishList extends DurableObject {
 		const whishListItems: WhishListItem[] = (await this.ctx.storage.get<WhishListItem[]>('whishListItems')) || [];
 		console.log('Whishlist items retrieved:', whishListItems.length);
 
-		console.log('Whishlist items:', whishListItems);
 		return whishListItems;
 	}
 
@@ -58,10 +57,10 @@ export class WhishList extends DurableObject {
 		const whishListItems: WhishListItem[] = (await this.ctx.storage.get<WhishListItem[]>('whishListItems')) || [];
 
 		const item = whishListItems.find((whishListItem) => whishListItem.courseId === courseId);
-		console.log('Old whishlist Item:', item);
+
 		if (item) {
 			Object.assign(item, updates);
-			console.log('Updated whishlist Item:', item);
+
 			await this.ctx.storage.put('whishListItems', whishListItems);
 
 			return `Item ${courseId} updated successfully`;

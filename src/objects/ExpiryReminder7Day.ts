@@ -6,7 +6,7 @@ export interface ExpiryData {
 	expiresAt: string;
 }
 
-const SEVEN_DAYS_IN_MS = (23 * 60 + 58) * 60 * 1000;
+const SEVEN_DAYS_IN_MS = 7 * 24 * 60 * 60 * 1000;
 
 export class ExpiryReminder7Day extends DurableObject {
 	constructor(ctx: DurableObjectState, env: Env) {
@@ -24,6 +24,7 @@ export class ExpiryReminder7Day extends DurableObject {
 
 		const existingAlarm = await this.ctx.storage.getAlarm();
 		if (existingAlarm) {
+			('⏰ Overiding existing reminder ');
 		}
 
 		await this.ctx.storage.put('expiryData', expiryData);
@@ -50,7 +51,7 @@ export class ExpiryReminder7Day extends DurableObject {
 						userId: expiryData.userId,
 						courseId: expiryData.courseId,
 						daysUntilExpiry: 7,
-						reminderType: 'expiry-reminder-7-day',
+						reminderType: 'expiry-reminder-7-days',
 					}),
 				});
 				if (response.ok) {

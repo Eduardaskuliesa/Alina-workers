@@ -6,7 +6,7 @@ export interface ExpiryData {
 	expiresAt: string;
 }
 
-const ONE_DAY_IN_MS = (23 * 60 + 59) * 60 * 1000;
+const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
 
 export class ExpiryReminder1Day extends DurableObject {
 	constructor(ctx: DurableObjectState, env: Env) {

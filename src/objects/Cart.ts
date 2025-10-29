@@ -15,8 +15,8 @@ export interface CartItem {
 	isFromPrice?: boolean;
 }
 
-const FOUR_HOURS_IN_MS = 2 * 1000;
-const CART_REMINDER_COLDOWN_TIME_IN_S = 60;
+const FOUR_HOURS_IN_MS = 4 * 60 * 60 * 1000;
+const CART_REMINDER_COLDOWN_TIME_IN_S = 60 * 60 * 48;
 
 export class Cart extends DurableObject {
 	constructor(ctx: DurableObjectState, env: Env) {
@@ -116,7 +116,7 @@ export class Cart extends DurableObject {
 		const cartItems: CartItem[] = (await this.ctx.storage.get<CartItem[]>('cartItems')) || [];
 
 		const item = cartItems.find((cartItem) => cartItem.courseId === courseId);
-		console.log('Old cart Item:', item);
+
 		if (item) {
 			Object.assign(item, updates);
 			console.log('Updated cart Item:', item);
